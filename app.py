@@ -1,6 +1,17 @@
+%%writefile app.py
 import streamlit as st
 import pandas as pd
-import joblib
+import subprocess
+import sys
+
+# Check if joblib is installed, if not, install it
+try:
+    import joblib
+except ImportError:
+    st.warning("Joblib not found. Attempting to install...")
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "joblib"])
+    import joblib # Import after installation
+
 from sklearn.pipeline import Pipeline
 from sklearn.base import BaseEstimator, TransformerMixin
 
@@ -68,3 +79,8 @@ if submitted:
     else:
         st.success("🟢 LOW RISK: Standard monitoring sufficient.")
     st.caption("Based on historical China–Africa trade patterns.")
+
+    # Resources section
+    st.subheader("Resources")
+    st.markdown("Additional information and links will be provided here.")
+
