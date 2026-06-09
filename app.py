@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import subprocess
 import sys
+import os
+import shutil # Import shutil for file operations
 
 # Check if joblib is installed, if not, install it
 try:
@@ -25,7 +27,18 @@ class FeatureEngineer(BaseEstimator, TransformerMixin):
 
 @st.cache_resource
 def load_model():
-    return joblib.load('shipment_delay_pipeline.pkl')
+    model_path = 'shipment_delay_pipeline.pkl'
+    # Ensure the model file is in the current working directory for Streamlit
+    if not os.path.exists(model_path):
+        # Assuming it's in /content/ if not found locally
+        source_path = '/content/' + model_path
+        if os.path.exists(source_path):
+            shutil.copy(source_path, model_path)
+            st.info(f"Copied {source_path} to {os.getcwd()}/{model_path}")
+        else:
+            st.error(f"Model file not found at {model_path} or {source_path}")
+            raise FileNotFoundError(f"Model file '{model_path}' not found.")
+    return joblib.load(model_path)
 
 pipeline = load_model()
 
